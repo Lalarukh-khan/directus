@@ -32,6 +32,8 @@ import presetsRouter from './controllers/presets.js';
 import relationsRouter from './controllers/relations.js';
 import revisionsRouter from './controllers/revisions.js';
 import rolesRouter from './controllers/roles.js';
+import akeneoProductsRouter from './controllers/akeneoproducts.js';
+import mappingakeneoRouter from './controllers/mappingakeneo.js';
 import schemaRouter from './controllers/schema.js';
 import serverRouter from './controllers/server.js';
 import settingsRouter from './controllers/settings.js';
@@ -293,6 +295,8 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/relations', relationsRouter);
 	app.use('/revisions', revisionsRouter);
 	app.use('/roles', rolesRouter);
+	app.use('/akeneoproducts', akeneoProductsRouter);
+	app.use('/mappingakeneo', mappingakeneoRouter);
 	app.use('/schema', schemaRouter);
 	app.use('/server', serverRouter);
 	app.use('/settings', settingsRouter);

@@ -373,7 +373,7 @@ function revert(values: Record<string, any>) {
 						@error="avatarError = $event"
 					/>
 					<v-icon v-else name="account_circle" x-large />
-				</div>
+				</div> 
 				<div class="user-box-content">
 					<template v-if="loading">
 						<v-skeleton-loader type="text" />

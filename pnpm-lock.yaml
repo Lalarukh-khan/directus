@@ -281,6 +281,9 @@ importers:
       nanoid:
         specifier: 5.0.6
         version: 5.0.6
+      node-fetch:
+        specifier: 3.3.2
+        version: 3.3.2
       node-machine-id:
         specifier: 1.1.12
         version: 1.1.12

@@ -204,6 +204,43 @@ export class AkeneoProductsService extends ItemsService {
 		return "hello";
     }
 
+	override async findOneZP(productId: string, opts?: MutationOptions): Promise<PrimaryKey> {
+
+		const eshockp = await this.knex('get_akeneo_products').where({ zp_id: productId }).first();
+
+		return eshockp;
+    }
+
+	override async findOneEshock(productId: string, opts?: MutationOptions): Promise<PrimaryKey> {
+		
+		const eshockp = await this.knex('get_akeneo_products').where({ eshock_id: productId }).first();
+
+		return eshockp;
+    }
+
+	override async findOneAkeneo(productId: string, opts?: MutationOptions): Promise<PrimaryKey> {
+		
+		const akeneoid = await this.knex('get_akeneo_products').where({ identifier: productId }).first();
+
+		return akeneoid;
+    }
+
+	override async updateOneAkeneo(identifier: string, priceNetto: string, moq: string, available: number, eol: number, deleted: number, PriceEshock: number, PriceZP: number, opts?: MutationOptions): Promise<PrimaryKey> {
+
+		await this.knex('get_akeneo_products')
+					.where({ identifier: identifier })  // Identifies which record(s) to update
+					.update({
+						moq: moq,
+						stock: available,
+						eol: eol,
+						deleted_carbomat: deleted,
+						price_eshock: PriceEshock,
+						price_zp: PriceZP
+					});
+
+		return "hello";
+    }
+
 	// override async updateBatch(data: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
 	// 	for (const partialItem of data) {
 	// 		this.assertValidIpAccess(partialItem);

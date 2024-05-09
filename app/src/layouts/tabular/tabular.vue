@@ -79,6 +79,9 @@ const mainElement = inject<Ref<Element | undefined>>('main-element');
 const table = ref<ComponentPublicInstance>();
 const showMappingBtn = ref(false);
 const showAkeneoBtn = ref(false);
+const showDeleteZPBtn = ref(false);
+const showDeleteEshockBtn = ref(false);
+const showCarbomateBtn = ref(false);
 
 onMounted(() => {
   checkURL(); // This will check the URL when the component mounts
@@ -104,17 +107,24 @@ const { sizes: pageSizes, selected: selectedSize } = usePageSize<string>(
 );
 
 function checkURL() {
-  const resURL = window.location.href; // or however you obtain your URL dynamically
+  const resURL = window.location.href;
 
   if (resURL.includes("akeneo_products_mapping")) {
     showMappingBtn.value = true;
-    console.log("mapping"); // This is just to verify that the condition was met
+    console.log("mapping");
   }
 
-  if (resURL.includes("get_akeneo_products")) {
-    showAkeneoBtn.value = true;
-    console.log("akeneo"); // This is just to verify that the condition was met
-  }
+//   if (resURL.includes("get_akeneo_products")) {
+//     showAkeneoBtn.value = true;
+//     console.log("akeneo");
+//   }
+
+	if (resURL.includes("get_akeneo_products")) {
+		// showDeleteZPBtn.value = true;
+		// showDeleteEshockBtn.value = true;
+		showCarbomateBtn.value = true;
+		console.log("delete page");
+	}
 }
 
 // const url = window.location.href;
@@ -329,7 +339,7 @@ function getall() {
 }
 
 async function mappingakeneo() {
-console.log("I'm clicked!");
+	document.getElementById("mappingakeneo").innerHTML = `Mapping All Products...`;
 
 	try {
 			const response = await api.get('/mappingakeneo');
@@ -338,6 +348,7 @@ console.log("I'm clicked!");
 				console.log("response: ",response);
 				console.log('Data sent to backend successfully');
 				document.getElementById("successmsg").style.display = "block";
+				document.getElementById("mappingakeneo").innerHTML = `Re-Sync Products`;
 			} else {
 				console.log('Failed to send data to backend');
 				document.getElementById("errormsg").style.display = "block";
@@ -350,6 +361,199 @@ console.log("I'm clicked!");
 		}
 }
 
+async function deleteZP(){
+console.log("I'm clicked!");
+	document.getElementById("deleteZP").innerHTML = `Deleting ZP Products...`;
+
+	try {
+			const response = await api.get('/deleteZP');
+
+			if (response) {
+				console.log("response: ",response);
+				console.log('Data sent to backend successfully');
+				document.getElementById("successmsg").style.display = "block";
+				document.getElementById("deleteZP").innerHTML = `ZP Fetch & Delete Products`;
+			} else {
+				console.log('Failed to send data to backend');
+				document.getElementById("errormsg").style.display = "block";
+				document.getElementById("deleteZP").innerHTML = `ZP Fetch & Delete Products`;
+			}
+		} catch (error) {
+			console.log('Error sending data to backend:', error);
+			document.getElementById("errormsg").style.display = "block";
+			document.getElementById("deleteZP").innerHTML = `ZP Fetch & Delete Products`;
+		}
+
+}
+
+async function deleteEshock(){
+console.log("I'm clicked!");
+	document.getElementById("deleteEshock").innerHTML = `Deleting ZP Products...`;
+
+	try {
+			const response = await api.get('/deleteEshock');
+
+			if (response) {
+				console.log("response: ",response);
+				console.log('Data sent to backend successfully');
+				document.getElementById("successmsg").style.display = "block";
+				document.getElementById("deleteEshock").innerHTML = `Eshock Fetch & Delete Products`;
+			} else {
+				console.log('Failed to send data to backend');
+				document.getElementById("errormsg").style.display = "block";
+				document.getElementById("deleteEshock").innerHTML = `Eshock Fetch & Delete Products`;
+			}
+		} catch (error) {
+			console.log('Error sending data to backend:', error);
+			document.getElementById("errormsg").style.display = "block";
+			document.getElementById("deleteEshock").innerHTML = `Eshock Fetch & Delete Products`;
+		}
+
+}
+
+async function carbomate() {
+
+	document.getElementById("carbomate").innerHTML = `Fetching Carbomate Products`;
+
+	let take = 7455;
+	let skip = 1; //67250
+
+	for (let i = 0; i < 1; i++) {
+		try {
+
+			const data = await fetchToken('https://pim.groep-e.be/api/oauth/v1/token', { grant_type:"password", username:"bricke_1125", password:"256a6154c", client_id: "4_5x9b008ra78k4oogoskwc8kswoo8g8sgc40ccs0skwwck04wc8", client_secret: "1uhdfg69ppdwoocwssc40gk08gsc084c80osocwcgsk44w44wc" });
+			console.log("current I: " + i);
+			await fetchFunc(skip, data);
+			const j = i + 1;
+			take = 7455 * j;
+			skip = take + 1;
+			
+		} catch (error) {
+			console.log('Error:', error);
+			document.getElementById("errormsg").style.display = "block";
+		}
+	}
+}
+
+async function fetchToken(url = '', data = {}) {
+	const formData = new URLSearchParams();
+
+	for (const key in data) {
+		formData.append(key, data[key]);
+	}
+
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		body: formData
+	});
+
+	if (response.ok) {
+		const data = await response.json();
+
+		if(data){
+			return data.access_token;
+		}
+	} else {
+		throw new Error('Failed to fetch data');
+		document.getElementById("carbomate").innerHTML = `Sync Carbomat API`;
+	}
+}
+
+async function fetchFunc(skip, accesstoken) {
+							// const csrftoken = getCookie('csrftoken');
+						
+							try {
+								// const requestData = { skip: skip, accessToken: accesstoken };
+
+								const response = await api.post('/carbomateproducts', {
+									skip: skip,
+									accesstoken: accesstoken
+								});
+
+								if (response) {
+									if(skip == 1){
+										document.getElementById("loadmsg").innerHTML = '10% Uploaded';
+										document.getElementById("loadmsg").style.display = "block";
+									}
+
+									if(skip == 7456){
+										document.getElementById("loadmsg").innerHTML = '20% Uploaded';
+										document.getElementById("loadmsg").style.display = "block";
+									}
+
+									if(skip == 14911){
+										document.getElementById("loadmsg").innerHTML = '30% Uploaded';
+										document.getElementById("loadmsg").style.display = "block";
+									}
+
+									if(skip == 22366){
+										document.getElementById("loadmsg").innerHTML = '40% Uploaded';
+										document.getElementById("loadmsg").style.display = "block";
+									}
+
+									if(skip == 29821){
+										document.getElementById("loadmsg").innerHTML = '50% Uploaded';
+										document.getElementById("loadmsg").style.display = "block";
+									}
+
+									if(skip == 37276){
+										document.getElementById("loadmsg").innerHTML = '60% Uploaded';
+										document.getElementById("loadmsg").style.display = "block";
+									}
+
+									if(skip == 44731){
+										document.getElementById("loadmsg").innerHTML = '70% Uploaded';
+										document.getElementById("loadmsg").style.display = "block";
+									}
+
+									if(skip == 52186){
+										document.getElementById("loadmsg").innerHTML = '80% Uploaded';
+										document.getElementById("loadmsg").style.display = "block";
+									}
+									
+									if(skip == 59641){
+										document.getElementById("loadmsg").innerHTML = '90% Uploaded';
+										document.getElementById("loadmsg").style.display = "block";
+									}
+									
+									if(skip == 67096){
+										document.getElementById("loadmsg").style.display = "none";
+										document.getElementById("carbomate").innerHTML = `Sync Carbomat API`;
+										document.getElementById("successmsg").style.display = "block";
+									}
+								} else {
+									console.error('Failed to send data to backend');
+									document.getElementById("errormsg").style.display = "block";
+									document.getElementById("carbomate").innerHTML = `Sync Carbomat API`;
+								}
+							} catch (error) {
+								console.error('Error sending data to backend:', error);
+								document.getElementById("errormsg").style.display = "block";
+								document.getElementById("carbomate").innerHTML = `Sync Carbomat API`;
+							}
+}
+
+function getCookie(name) {
+	let cookieValue = null;
+
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+
+	return cookieValue;
+}
 
 const fieldsWritable = useSync(props, 'fields', emit);
 
@@ -374,7 +578,10 @@ function removeField(fieldKey: string) {
 				</div>
 			</a></div> -->
 			<div v-show="showAkeneoBtn" id="akeneoprbtn" data-v-28d526fe="" data-v-8be53c59="" class="v-button"><a data-v-28d526fe="" class="button align-center normal" disabled="false" @click="getall"><span id="getall" data-v-28d526fe="" class="content">Get All Products</span><div data-v-28d526fe="" class="spinner"><!--v-if--></div></a></div>
-			<div v-show="showMappingBtn" id="mappingakeneobtn" data-v-28d526fe="" data-v-8be53c59="" class="v-button"><a data-v-28d526fe="" class="button align-center normal" disabled="false" @click="mappingakeneo"><span id="mappingakeneo" data-v-28d526fe="" class="content">Re-Sync Products</span><div data-v-28d526fe="" class="spinner"><!--v-if--></div></a></div>
+			<div v-show="showMappingBtn" id="mappingakeneobtn" data-v-28d526fe="" data-v-8be53c59="" class="v-button"><a data-v-28d526fe="" class="button align-center normal" disabled="false" @click="mappingakeneo"><span id="mappingakeneo" data-v-28d526fe="" class="content">Re-Sync Products</span><div data-v-28d526fe="" class="spinner"></div></a></div>
+			<div v-show="showDeleteZPBtn" id="deleteZPbtn" data-v-28d526fe="" data-v-8be53c59="" class="v-button"><a data-v-28d526fe="" class="button align-center normal" disabled="false" @click="deleteZP"><span id="deleteZP" data-v-28d526fe="" class="content">ZP Fetch & Delete Products</span><div data-v-28d526fe="" class="spinner"></div></a></div>&nbsp;
+			<div v-show="showDeleteEshockBtn" id="deleteEshockbtn" data-v-28d526fe="" data-v-8be53c59="" class="v-button"><a data-v-28d526fe="" class="button align-center normal" disabled="false" @click="deleteEshock"><span id="deleteEshock" data-v-28d526fe="" class="content">Eshock Fetch & Delete Products</span><div data-v-28d526fe="" class="spinner"></div></a></div>
+			<div v-show="showCarbomateBtn" id="carbomatebtn" data-v-28d526fe="" data-v-8be53c59="" class="v-button"><a data-v-28d526fe="" class="button align-center normal" disabled="false" @click="carbomate"><span id="carbomate" data-v-28d526fe="" class="content">Sync Carbomate API</span><div data-v-28d526fe="" class="spinner"></div></a></div>
 			<br />
 			<h3 id="loadmsg" class="card-title mb-1 mt-3" style="color: black; display: none;">All Products have been uploaded Successfully!</h3>
 			<h3 id="errormsg" class="card-title mb-1 mt-3" style="color: red; display: none;">Unfortunately! Something Went Wrong.</h3>
